@@ -8,7 +8,10 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 load_dotenv()
-OMDB_API_KEY = os.getenv("OMDB_API_KEY")
+OMDB_API_KEY = st.secrets.get(
+    "OMDB_API_KEY",
+    os.getenv("OMDB_API_KEY", "")
+)
 @st.cache_data
 def get_movie_poster(movie_title):
     if not OMDB_API_KEY:
