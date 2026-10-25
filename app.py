@@ -22,23 +22,26 @@ def get_movie_poster(movie_title):
             "https://www.omdbapi.com/",
             params={
                 "apikey": OMDB_API_KEY,
-                "t": movie_title
+                "t": movie_title,
+                "type": "movie"
             },
             timeout=10
         )
 
         data = response.json()
+
         if data.get("Response") == "False":
-            st.warning("OMDb error: " + data.get("Error", "Unknown error"))
+            return "ERROR: " + data.get("Error", "Unknown error")
+
         poster = data.get("Poster")
 
         if poster and poster != "N/A":
             return poster
 
-    except requests.RequestException:
-        return None
+        return "NO_POSTER"
 
-    return None
+    except Exception:
+        return "API_ERROR"
 st.set_page_config(
     page_title="CineMatch | Movie Recommender",
     page_icon="🎬",
@@ -240,8 +243,18 @@ try:
     with left:
         poster = get_movie_poster(str(chosen["title"]))
 
-        if poster:
+        if poster and poster.startswith("http"):
             st.image(poster, width=230)
+
+        elif poster and poster.startswith("ERROR:"):
+            st.warning(poster)
+
+        elif poster == "NO_POSTER":
+            st.info("OMDb ne is movie ka poster nahi diya.")
+
+        elif poster == "API_ERROR":
+            st.error("OMDb API connection failed.")
+
         else:
             st.info("Poster not available")
 
