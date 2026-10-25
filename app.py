@@ -158,7 +158,7 @@ def load_data():
     movies = pd.read_csv("tmdb_5000_movies.csv")
 
     credits_csv = "tmdb_5000_credits.csv"
-    credits_zip = "tmdb_5000_credits.csv.zip"
+    credits_zip = "tmdb_5000_credits.zip"
 
     if os.path.exists(credits_csv):
         credits = pd.read_csv(credits_csv)
