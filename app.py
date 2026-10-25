@@ -148,18 +148,42 @@ st.html("""
 </div>
 """)
 
+import os
+import zipfile
+import pandas as pd
+import streamlit as st
+
 @st.cache_data
 def load_data():
     movies = pd.read_csv("tmdb_5000_movies.csv")
-    
-    credits = pd.read_csv("tmdb_5000_credits.csv")
+
+    credits_csv = "tmdb_5000_credits.csv"
+    credits_zip = "tmdb_5000_credits.csv.zip"
+
+    if os.path.exists(credits_csv):
+        credits = pd.read_csv(credits_csv)
+    elif os.path.exists(credits_zip):
+        with zipfile.ZipFile(credits_zip, "r") as z:
+            csv_name = next(
+                name for name in z.namelist()
+                if name.lower().endswith(".csv")
+            )
+            with z.open(csv_name) as f:
+                credits = pd.read_csv(f)
+    else:
+        st.error("Credits dataset file not found.")
+        st.stop()
 
     credits = credits.rename(columns={"movie_id": "id"})
+
     movies = movies.merge(
         credits[["id", "cast", "crew"]],
         on="id",
         how="left"
     )
+
+    # Keep the rest of your existing load_data() code below this line.
+
 
     def parse_list(value):
         try:
