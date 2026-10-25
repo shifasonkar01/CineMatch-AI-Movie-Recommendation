@@ -28,6 +28,8 @@ def get_movie_poster(movie_title):
         )
 
         data = response.json()
+        if data.get("Response") == "False":
+            st.warning("OMDb error: " + data.get("Error", "Unknown error"))
         poster = data.get("Poster")
 
         if poster and poster != "N/A":
